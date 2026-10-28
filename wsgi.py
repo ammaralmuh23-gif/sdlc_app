@@ -1,22 +1,22 @@
 import os
 import sys
+import sqlite3
 
 path = os.path.dirname(os.path.abspath(__file__))
 if path not in sys.path:
     sys.path.append(path)
 
 from app import create_app
-from models.db import execute_query
 
 application = create_app()
 
-try:
-    sql = open('database.sql', 'r', encoding='utf-8').read()
-    for stmt in sql.split(';'):
-        if stmt.strip():
-            try:
-                execute_query(stmt)
-            except Exception:
-                pass
-except Exception:
-    pass
+# إنشاء الجداول إذا لم تكن موجودة
+db_path = os.path.join(path, 'sdlc_manager.db')
+sql_path = os.path.join(path, 'database.sql')
+
+if not os.path.exists(db_path):
+    conn = sqlite3.connect(db_path)
+    conn.executescript(open(sql_path, 'r', encoding='utf-8').read())
+    conn.commit()
+    conn.close()
+    print("✅ Tables created")
