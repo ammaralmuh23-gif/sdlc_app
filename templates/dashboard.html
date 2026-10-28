@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة التحكم{% endblock %}
+
+{% block content %}
+<h1>لوحة التحكم</h1>
+
+<!-- FR-01: 4 أرقام إحصائية -->
+<div class="cards">
+    <div class="card">
+        <div class="card-value">{{ stats.total_projects }}</div>
+        <div class="card-label">إجمالي المشاريع</div>
+    </div>
+    <div class="card">
+        <div class="card-value">{{ stats.active_projects }}</div>
+        <div class="card-label">المشاريع النشطة</div>
+    </div>
+    <div class="card">
+        <div class="card-value">{{ stats.completed_phases }}</div>
+        <div class="card-label">المراحل المكتملة</div>
+    </div>
+    <div class="card">
+        <div class="card-value">{{ stats.open_requirements }}</div>
+        <div class="card-label">المتطلبات المفتوحة</div>
+    </div>
+</div>
+
+<p style="margin-top: 24px;">
+    <a href="{{ url_for('projects.list_projects') }}" class="btn">عرض المشاريع</a>
+    <a href="{{ url_for('projects.new_project') }}" class="btn btn-secondary">+ مشروع جديد</a>
+</p>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}سجل النشاطات{% endblock %}
+
+{% block content %}
+
+<h1>سجل النشاطات</h1>
+<p style="color:#666; margin-bottom: 16px;">
+    آخر {{ logs|length }} عملية — مرتّبة من الأحدث.
+</p>
+
+{% if logs %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>التاريخ</th>
+            <th>العملية</th>
+            <th>الكيان</th>
+            <th>التفاصيل</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.id }}</td>
+            <td>{{ log.created_at }}</td>
+            <td>
+                <!-- code: خط ثابت للقيم التقنية -->
+                <code>{{ log.action }}</code>
+            </td>
+            <td>
+                {{ log.entity_type }}{% if log.entity_id %}#{{ log.entity_id }}{% endif %}
+            </td>
+            <td>{{ log.details or '—' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">لا توجد نشاطات بعد.</p>
+{% endif %}
+
+{% endblock %}

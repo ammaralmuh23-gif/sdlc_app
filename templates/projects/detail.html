@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }}{% endblock %}
+
+{% block content %}
+
+<!-- ===== Header: اسم المشروع + أزرار الإجراءات ===== -->
+<div class="page-header">
+    <h1>{{ project.name }}</h1>
+    <div>
+        <!-- FR-03 -->
+        <a href="{{ url_for('projects.edit_project', project_id=project.id) }}"
+           class="btn-sm">تعديل</a>
+
+        <!-- FR-10 -->
+        <a href="{{ url_for('reports.project_report', project_id=project.id) }}"
+           class="btn-sm">تقرير</a>
+
+        <!-- FR-10 -->
+        <a href="{{ url_for('reports.export_csv', project_id=project.id) }}"
+           class="btn-sm">تصدير CSV</a>
+
+        <!-- FR-04 -->
+        <form action="{{ url_for('projects.delete_project_route', project_id=project.id) }}"
+              method="post"
+              style="display:inline;"
+              onsubmit="return confirm('هل أنت متأكد من حذف المشروع وكل مراحله ومتطلباته؟');">
+            <button type="submit" class="btn-sm btn-danger">حذف</button>
+        </form>
+    </div>
+</div>
+
+<!-- ===== بيانات المشروع ===== -->
+<div class="info-box">
+    <p><strong>الوصف:</strong> {{ project.description or '—' }}</p>
+    <p><strong>تاريخ البدء:</strong> {{ project.start_date or '—' }}</p>
+    <p><strong>الحالة:</strong>
+        {% if project.status == 'active' %}
+            <span class="badge badge-active">نشط</span>
+        {% else %}
+            <span class="badge badge-archived">مؤرشف</span>
+        {% endif %}
+    </p>
+</div>
+
+<!-- ===== FR-06, FR-09: المراحل ===== -->
+<h2>مراحل SDLC</h2>
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>المرحلة</th>
+            <th>الحالة</th>
+            <th>تغيير</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ph in phases %}
+        <tr>
+            <td>{{ ph.order_index }}</td>
+            <td>{{ ph.name }}</td>
+            <td>
+                {% if ph.status == 'completed' %}
+                    ✅ مكتملة
+                {% elif ph.status == 'in_progress' %}
+                    🔄 قيد العمل
+                {% else %}
+                    ⏳ معلقة
+                {% endif %}
+            </td>
+            <td>
+                <!-- FR-06: نموذج تغيير الحالة -->
+                <form action="{{ url_for('phases.change_status', phase_id=ph.id) }}"
+                      method="post" style="display:flex; gap:4px;">
+                    <select name="status">
+                        <option value="pending"     {% if ph.status == 'pending' %}selected{% endif %}>معلقة</option>
+                        <option value="in_progress" {% if ph.status == 'in_progress' %}selected{% endif %}>قيد العمل</option>
+                        <option value="completed"   {% if ph.status == 'completed' %}selected{% endif %}>مكتملة</option>
+                    </select>
+                    <button type="submit" class="btn-sm">حفظ</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ===== FR-07, FR-08: المتطلبات ===== -->
+<div class="page-header">
+    <h2>متطلبات المشروع ({{ requirements|length }})</h2>
+    <a href="{{ url_for('requirements.new_requirement', project_id=project.id) }}"
+       class="btn-sm">+ متطلب جديد</a>
+</div>
+
+{% if requirements %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>العنوان</th>
+            <th>الوصف</th>
+            <th>الحالة</th>
+            <th>إجراءات</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in requirements %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.title }}</td>
+            <td>{{ r.description or '—' }}</td>
+            <td>
+                {% if r.status == 'open' %}
+                    <span class="badge badge-open">مفتوح</span>
+                {% else %}
+                    <span class="badge badge-done">منجز</span>
+                {% endif %}
+            </td>
+            <td>
+                <!-- FR-08 -->
+                <a href="{{ url_for('requirements.edit_requirement', req_id=r.id) }}"
+                   class="btn-sm">تعديل</a>
+
+                <!-- FR-08 -->
+                <form action="{{ url_for('requirements.delete_requirement_route', req_id=r.id) }}"
+                      method="post"
+                      style="display:inline;"
+                      onsubmit="return confirm('حذف المتطلب؟');">
+                    <button type="submit" class="btn-sm btn-danger">حذف</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">لا توجد متطلبات بعد.</p>
+{% endif %}
+
+{% endblock %}

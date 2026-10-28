@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ 'تعديل مشروع' if project else 'مشروع جديد' }}
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ 'تعديل مشروع' if project else 'مشروع جديد' }}</h1>
+
+<form method="post" class="form-box">
+
+    <!-- FR-02: الاسم (مطلوب) -->
+    <label for="name">اسم المشروع *</label>
+    <input type="text" id="name" name="name" required
+           value="{{ project.name if project else '' }}">
+
+    <!-- الوصف -->
+    <label for="description">الوصف</label>
+    <textarea id="description" name="description" rows="4">{{ project.description if project else '' }}</textarea>
+
+    <!-- تاريخ البدء -->
+    <label for="start_date">تاريخ البدء</label>
+    <input type="date" id="start_date" name="start_date"
+           value="{{ project.start_date if project and project.start_date else '' }}">
+
+    <!-- FR-03: الحالة (تعديل فقط) -->
+    {% if project %}
+    <label for="status">الحالة</label>
+    <select id="status" name="status">
+        <option value="active" {% if project.status == 'active' %}selected{% endif %}>نشط</option>
+        <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>مؤرشف</option>
+    </select>
+    {% endif %}
+
+    <!-- أزرار -->
+    <div class="form-actions">
+        <button type="submit" class="btn">حفظ</button>
+        <a href="{{ url_for('projects.list_projects') }}" class="btn btn-secondary">إلغاء</a>
+    </div>
+
+</form>
+
+{% endblock %}

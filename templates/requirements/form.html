@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ 'تعديل متطلب' if requirement else 'متطلب جديد' }}
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ 'تعديل متطلب' if requirement else 'متطلب جديد' }}</h1>
+
+<!-- سياق: أي مشروع -->
+<p>المشروع: <strong>{{ project.name }}</strong></p>
+
+<form method="post" class="form-box">
+
+    <!-- العنوان (مطلوب) -->
+    <label for="title">عنوان المتطلب *</label>
+    <input type="text" id="title" name="title" required
+           value="{{ requirement.title if requirement else '' }}">
+
+    <!-- الوصف -->
+    <label for="description">الوصف</label>
+    <textarea id="description" name="description" rows="4">{{ requirement.description if requirement else '' }}</textarea>
+
+    <!-- الحالة -->
+    <label for="status">الحالة</label>
+    <select id="status" name="status">
+        <option value="open" {% if requirement and requirement.status == 'open' %}selected{% endif %}>مفتوح</option>
+        <option value="done" {% if requirement and requirement.status == 'done' %}selected{% endif %}>منجز</option>
+    </select>
+
+    <div class="form-actions">
+        <button type="submit" class="btn">حفظ</button>
+        <a href="{{ url_for('projects.detail_project', project_id=project.id) }}"
+           class="btn btn-secondary">إلغاء</a>
+    </div>
+
+</form>
+
+{% endblock %}

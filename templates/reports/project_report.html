@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}تقرير: {{ project.name }}{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="page-header">
+    <h1>تقرير المشروع: {{ project.name }}</h1>
+    <div>
+        <!-- FR-10: تصدير CSV -->
+        <a href="{{ url_for('reports.export_csv', project_id=project.id) }}"
+           class="btn">تصدير CSV</a>
+
+        <!-- زر طباعة (JS بسيط) -->
+        <button onclick="window.print()" class="btn btn-secondary">طباعة</button>
+    </div>
+</div>
+
+<!-- ===== القسم 1: بيانات المشروع ===== -->
+<h2>معلومات المشروع</h2>
+<div class="info-box">
+    <p><strong>الرقم:</strong> {{ project.id }}</p>
+    <p><strong>الاسم:</strong> {{ project.name }}</p>
+    <p><strong>الوصف:</strong> {{ project.description or '—' }}</p>
+    <p><strong>تاريخ البدء:</strong> {{ project.start_date or '—' }}</p>
+    <p><strong>الحالة:</strong> {{ 'نشط' if project.status == 'active' else 'مؤرشف' }}</p>
+</div>
+
+<!-- ===== القسم 2: المراحل ===== -->
+<h2>المراحل ({{ phases|length }})</h2>
+{% if phases %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>المرحلة</th>
+            <th>الحالة</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in phases %}
+        <tr>
+            <td>{{ p.order_index }}</td>
+            <td>{{ p.name }}</td>
+            <td>
+                {% if p.status == 'completed' %}مكتملة
+                {% elif p.status == 'in_progress' %}قيد العمل
+                {% else %}معلقة{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">لا توجد مراحل.</p>
+{% endif %}
+
+<!-- ===== القسم 3: المتطلبات ===== -->
+<h2>المتطلبات ({{ requirements|length }})</h2>
+{% if requirements %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>العنوان</th>
+            <th>الوصف</th>
+            <th>الحالة</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in requirements %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.title }}</td>
+            <td>{{ r.description or '—' }}</td>
+            <td>{{ 'مفتوح' if r.status == 'open' else 'منجز' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">لا توجد متطلبات.</p>
+{% endif %}
+
+<!-- العودة -->
+<p style="margin-top: 24px;">
+    <a href="{{ url_for('projects.detail_project', project_id=project.id) }}">
+        ← رجوع لتفاصيل المشروع
+    </a>
+</p>
+
+{% endblock %}

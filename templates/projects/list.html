@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}المشاريع{% endblock %}
+
+{% block content %}
+
+<!-- FR-09: عنوان + زر إضافة -->
+<div class="page-header">
+    <h1>المشاريع</h1>
+    <a href="{{ url_for('projects.new_project') }}" class="btn">+ مشروع جديد</a>
+</div>
+
+{% if projects %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>الاسم</th>
+            <th>تاريخ البدء</th>
+            <th>الحالة</th>
+            <th>إجراءات</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in projects %}
+        <tr>
+            <td>{{ p.id }}</td>
+            <td>
+                <a href="{{ url_for('projects.detail_project', project_id=p.id) }}">
+                    {{ p.name }}
+                </a>
+            </td>
+            <td>{{ p.start_date or '—' }}</td>
+            <td>
+                {% if p.status == 'active' %}
+                    <span class="badge badge-active">نشط</span>
+                {% else %}
+                    <span class="badge badge-archived">مؤرشف</span>
+                {% endif %}
+            </td>
+            <td>
+                <!-- FR-09 -->
+                <a href="{{ url_for('projects.detail_project', project_id=p.id) }}"
+                   class="btn-sm">عرض</a>
+
+                <!-- FR-03 -->
+                <a href="{{ url_for('projects.edit_project', project_id=p.id) }}"
+                   class="btn-sm">تعديل</a>
+
+                <!-- FR-04: حذف بـ POST + تأكيد -->
+                <form action="{{ url_for('projects.delete_project_route', project_id=p.id) }}"
+                      method="post"
+                      style="display:inline;"
+                      onsubmit="return confirm('هل أنت متأكد من حذف هذا المشروع؟\nسيتم حذف كل مراحله ومتطلباته.');">
+                    <button type="submit" class="btn-sm btn-danger">حذف</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+<p class="empty">لا توجد مشاريع بعد. ابدأ بإضافة مشروع جديد.</p>
+{% endif %}
+
+{% endblock %}

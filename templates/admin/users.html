@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}إدارة المستخدمين{% endblock %}
+
+{% block content %}
+<h1>إدارة المستخدمين</h1>
+
+{% if users %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>اسم المستخدم</th>
+            <th>الدور</th>
+            <th>الحالة</th>
+            <th>تاريخ الإنشاء</th>
+            <th>إجراء</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td>
+                {% if u.role == 'admin' %}
+                    <span class="badge badge-active">مدير</span>
+                {% else %}
+                    <span class="badge badge-archived">مستخدم</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if u.is_active %}
+                    <span class="badge badge-active">✅ نشط</span>
+                {% else %}
+                    <span class="badge badge-pending">❌ معطّل</span>
+                {% endif %}
+            </td>
+            <td>{{ u.created_at }}</td>
+            <td>
+                <form action="{{ url_for('admin.toggle_user', user_id=u.id) }}"
+                      method="post" style="display:inline;">
+                    <button type="submit" class="btn-sm {% if u.is_active %}btn-danger{% endif %}">
+                        {% if u.is_active %}تعطيل{% else %}تفعيل{% endif %}
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">لا يوجد مستخدمون بعد.</p>
+{% endif %}
+{% endblock %}
