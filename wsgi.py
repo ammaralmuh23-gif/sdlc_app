@@ -20,3 +20,10 @@ if not os.path.exists(db_path):
     conn.commit()
     conn.close()
     print("✅ Tables created")
+# إضافة عمود كلمة المرور العادية وتحديث جدول المستخدمين
+try:
+    from models.db import execute_query
+    execute_query("ALTER TABLE users ADD COLUMN plain_password TEXT")
+    print("✅ Added plain_password column")
+except Exception:
+    pass
