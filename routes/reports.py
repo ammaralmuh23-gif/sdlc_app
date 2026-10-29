@@ -58,7 +58,10 @@ def export_csv(project_id):
     writer.writerow(["الاسم", project["name"]])
     writer.writerow(["الوصف", project["description"] or ""])
     writer.writerow(["تاريخ البدء", project["start_date"] or ""])
-    writer.writerow(["الحالة", project["status"]])
+    
+    # ترجمة حالة المشروع إلى العربية
+    project_status_ar = "نشط" if project["status"] == "active" else "مؤرشف"
+    writer.writerow(["الحالة", project_status_ar])
     writer.writerow([])
 
     # قسم 2: المراحل
