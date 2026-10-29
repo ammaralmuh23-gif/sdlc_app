@@ -15,7 +15,7 @@ def get_requirements_by_project(project_id):
         """
         SELECT * FROM requirements
         WHERE project_id = %s
-        ORDER BY created_at DESC
+       ORDER BY id ASC
         """,
         (project_id,),
         fetch=True
