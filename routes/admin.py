@@ -51,7 +51,6 @@ def toggle_user(user_id):
 @bp.route("/users/<int:user_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit_user(user_id):
-    """FR-21: تعديل بيانات المستخدم (للمدير)"""
     if not current_user.is_admin:
         flash("هذه الصفحة للمسؤول فقط", "error")
         return redirect(url_for("dashboard.index"))
@@ -65,12 +64,25 @@ def edit_user(user_id):
         username = request.form.get("username", "").strip()
         role = request.form.get("role", "user")
         is_active = 1 if request.form.get("is_active") == "on" else 0
+        new_password = request.form.get("new_password", "").strip()
         
         if not username:
             flash("اسم المستخدم مطلوب", "error")
             return render_template("admin/edit_user.html", user=user)
 
+        # تحديث البيانات الأساسية
         update_user(user_id, username, role, is_active)
+        
+        # تحديث كلمة المرور إذا تم إدخالها
+        if new_password:
+            from models.user import update_user_password, hash_password
+            # نحتاج لتحديثها كنص عادي أيضاً
+            execute_query(
+                "UPDATE users SET plain_password = %s WHERE id = %s",
+                (new_password, user_id)
+            )
+            update_user_password(user_id, new_password)
+
         log_action("UPDATE_USER", "user", user_id, username)
         flash("تم تحديث بيانات المستخدم", "success")
         return redirect(url_for("admin.list_users"))
