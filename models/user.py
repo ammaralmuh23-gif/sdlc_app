@@ -80,7 +80,7 @@ def get_user(user_id):
 
 def get_all_users():
     """كل المستخدمين — FR-19 (Admin only)."""
-    return execute_query("SELECT * FROM users ORDER BY created_at DESC", fetch=True)
+    return execute_query("SELECT * FROM users ORDER BY id ASC", fetch=True)
 
 
 def toggle_user_active(user_id):
