@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}تعديل مستخدم{% endblock %}
+
+{% block content %}
+<h1>تعديل المستخدم: {{ user.username }}</h1>
+
+<form method="post" class="form-box">
+    <label for="username">اسم المستخدم *</label>
+    <input type="text" id="username" name="username" required value="{{ user.username }}">
+
+    <label for="role">الدور</label>
+    <select id="role" name="role">
+        <option value="user" {% if user.role == 'user' %}selected{% endif %}>مستخدم</option>
+        <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>مدير</option>
+    </select>
+
+    <label>
+        <input type="checkbox" name="is_active" {% if user.is_active %}checked{% endif %}>
+        نشط
+    </label>
+
+    <div class="form-actions">
+        <button type="submit" class="btn">حفظ التعديلات</button>
+        <a href="{{ url_for('admin.list_users') }}" class="btn btn-secondary">إلغاء</a>
+    </div>
+</form>
+{% endblock %}
