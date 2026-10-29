@@ -13,7 +13,6 @@
             <th>اسم المستخدم</th>
             <th>الدور</th>
             <th>الحالة</th>
-            <th>تاريخ الإنشاء</th>
             <th>إجراءات</th>
         </tr>
     </thead>
@@ -36,13 +35,9 @@
                     <span class="badge badge-pending">❌ معطّل</span>
                 {% endif %}
             </td>
-            <td>{{ u.created_at }}</td>
             <td>
                 <!-- تعديل -->
                 <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="btn-sm">تعديل</a>
-
-                <!-- إعادة تعيين كلمة المرور -->
-                <button type="button" class="btn-sm" onclick="showResetPassword({{ u.id }}, '{{ u.username }}')">كلمة المرور</button>
 
                 <!-- تعطيل/تفعيل -->
                 <form action="{{ url_for('admin.toggle_user', user_id=u.id) }}" method="post" style="display:inline;">
@@ -57,6 +52,12 @@
                     <button type="submit" class="btn-sm btn-danger">حذف</button>
                 </form>
                 {% endif %}
+
+                <!-- إعادة تعيين كلمة المرور مباشرة -->
+                <form action="{{ url_for('admin.reset_password', user_id=u.id) }}" method="post" style="display:inline-flex; margin-top:5px; gap:5px;">
+                    <input type="text" name="new_password" placeholder="كلمة مرور جديدة" required minlength="6" style="padding:4px; font-size:12px; width:120px; border-radius:4px; border:1px solid #ccc;">
+                    <button type="submit" class="btn-sm">حفظ</button>
+                </form>
             </td>
         </tr>
         {% endfor %}
@@ -65,32 +66,5 @@
 {% else %}
 <p class="empty">لا يوجد مستخدمون بعد.</p>
 {% endif %}
-
-<!-- نافذة إعادة تعيين كلمة المرور (مخفية) -->
-<div id="resetPasswordModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
-    <div style="background:white; padding:24px; border-radius:8px; max-width:400px; margin:100px auto;">
-        <h3>إعادة تعيين كلمة المرور</h3>
-        <p id="resetPasswordUser"></p>
-        <form id="resetPasswordForm" method="post">
-            <label for="new_password">كلمة المرور الجديدة *</label>
-            <input type="text" id="new_password" name="new_password" required minlength="6" style="width:100%; padding:8px; margin-bottom:10px;">
-            <div style="display:flex; gap:10px; justify-content:flex-end;">
-                <button type="button" class="btn btn-secondary" onclick="closeResetPassword()">إلغاء</button>
-                <button type="submit" class="btn">حفظ</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    function showResetPassword(userId, username) {
-        document.getElementById('resetPasswordUser').innerText = "المستخدم: " + username;
-        document.getElementById('resetPasswordForm').action = "/admin/users/" + userId + "/reset_password";
-        document.getElementById('resetPasswordModal').style.display = 'block';
-    }
-    function closeResetPassword() {
-        document.getElementById('resetPasswordModal').style.display = 'none';
-    }
-</script>
 
 {% endblock %}
