@@ -11,6 +11,7 @@
         <tr>
             <th>#</th>
             <th>اسم المستخدم</th>
+            <th>كلمة المرور</th>
             <th>الدور</th>
             <th>الحالة</th>
             <th>إجراءات</th>
@@ -21,6 +22,7 @@
         <tr>
             <td>{{ u.id }}</td>
             <td>{{ u.username }}</td>
+            <td><code>{{ u.plain_password }}</code></td>
             <td>
                 {% if u.role == 'admin' %}
                     <span class="badge badge-active">مدير</span>
