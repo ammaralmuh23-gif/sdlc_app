@@ -14,6 +14,20 @@ from models.db import execute_one
 bp = Blueprint("reports", __name__, url_prefix="/projects")
 
 
+# دالة مساعدة لترجمة الحالات
+def translate_status(status):
+    translations = {
+        "active": "نشط",
+        "archived": "مؤرشف",
+        "pending": "معلقة",
+        "in_progress": "قيد العمل",
+        "completed": "مكتملة",
+        "open": "مفتوح",
+        "done": "منجز"
+    }
+    return translations.get(status, status)
+
+
 @bp.route("/<int:project_id>/report")
 @login_required
 def project_report(project_id):
@@ -32,6 +46,7 @@ def project_report(project_id):
         project=project,
         phases=phases,
         requirements=requirements,
+        translate_status=translate_status # تمرير الدالة للقالب
     )
 
 
@@ -59,23 +74,24 @@ def export_csv(project_id):
     writer.writerow(["الوصف", project["description"] or ""])
     writer.writerow(["تاريخ البدء", project["start_date"] or ""])
     
-    # ترجمة حالة المشروع إلى العربية
-    project_status_ar = "نشط" if project["status"] == "active" else "مؤرشف"
-    writer.writerow(["الحالة", project_status_ar])
+    # ترجمة حالة المشروع
+    writer.writerow(["الحالة", translate_status(project["status"])])
     writer.writerow([])
 
     # قسم 2: المراحل
     writer.writerow(["=== المراحل ==="])
     writer.writerow(["#", "الاسم", "الحالة", "الترتيب"])
     for p in phases:
-        writer.writerow([p["id"], p["name"], p["status"], p["order_index"]])
+        # ترجمة حالة المرحلة
+        writer.writerow([p["id"], p["name"], translate_status(p["status"]), p["order_index"]])
     writer.writerow([])
 
     # قسم 3: المتطلبات
     writer.writerow(["=== المتطلبات ==="])
     writer.writerow(["#", "العنوان", "الوصف", "الحالة"])
     for r in requirements:
-        writer.writerow([r["id"], r["title"], r["description"] or "", r["status"]])
+        # ترجمة حالة المتطلب
+        writer.writerow([r["id"], r["title"], r["description"] or "", translate_status(r["status"])])
 
     log_action("EXPORT_CSV", "project", project_id, project["name"])
 
