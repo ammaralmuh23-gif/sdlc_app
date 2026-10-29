@@ -22,7 +22,7 @@
         <tr>
             <td>{{ u.id }}</td>
             <td>{{ u.username }}</td>
-            <td><code>{{ u.plain_password }}</code></td>
+            <td><code>{{ u.plain_password or 'مخفية' }}</code></td>
             <td>
                 {% if u.role == 'admin' %}
                     <span class="badge badge-active">مدير</span>
@@ -38,7 +38,7 @@
                 {% endif %}
             </td>
             <td>
-                <!-- تعديل -->
+                <!-- زر التعديل الشامل -->
                 <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="btn-sm">تعديل</a>
 
                 <!-- تعطيل/تفعيل -->
@@ -54,12 +54,6 @@
                     <button type="submit" class="btn-sm btn-danger">حذف</button>
                 </form>
                 {% endif %}
-
-                <!-- إعادة تعيين كلمة المرور مباشرة -->
-                <form action="{{ url_for('admin.reset_password', user_id=u.id) }}" method="post" style="display:inline-flex; margin-top:5px; gap:5px;">
-                    <input type="text" name="new_password" placeholder="كلمة مرور جديدة" required minlength="6" style="padding:4px; font-size:12px; width:120px; border-radius:4px; border:1px solid #ccc;">
-                    <button type="submit" class="btn-sm">حفظ</button>
-                </form>
             </td>
         </tr>
         {% endfor %}
