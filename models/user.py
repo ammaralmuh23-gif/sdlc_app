@@ -89,7 +89,24 @@ def toggle_user_active(user_id):
         "UPDATE users SET is_active = NOT is_active WHERE id = %s",
         (user_id,)
     )
+def update_user(user_id, username, role, is_active):
+    """يحدّث بيانات المستخدم (بدون كلمة المرور)"""
+    execute_query(
+        "UPDATE users SET username = %s, role = %s, is_active = %s WHERE id = %s",
+        (username, role, is_active, user_id)
+    )
 
+def update_user_password(user_id, new_password):
+    """يغيّر كلمة مرور المستخدم (للمدير)"""
+    password_hash = hash_password(new_password)
+    execute_query(
+        "UPDATE users SET password = %s WHERE id = %s",
+        (password_hash, user_id)
+    )
+
+def delete_user(user_id):
+    """يحذف مستخدماً"""
+    execute_query("DELETE FROM users WHERE id = %s", (user_id,))
 
 def count_users():
     """عدد المستخدمين (نستخدمه لمعرفة أول مستخدم = admin)."""
