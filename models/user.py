@@ -61,7 +61,7 @@ def create_user(username, plain_password, role="user"):
     password_hash = hash_password(plain_password)
     return execute_query(
         "INSERT INTO users (username, password, plain_password, role) VALUES (%s, %s, %s, %s)",
-        (username, password_hash, plain_password, role), # حفظ النص العادي أيضاً
+        (username, password_hash, plain_password, role),
     )
 
 
