@@ -30,7 +30,7 @@ def get_recent_logs(limit=100):
     limit يُمرَّر كـ parameterized query (آمن).
     """
     return execute_query(
-        "SELECT * FROM audit_log ORDER BY created_at DESC LIMIT %s",
+        "SELECT * FROM audit_log ORDER BY created_at ASC LIMIT %s",
         (limit,),
         fetch=True
     )
