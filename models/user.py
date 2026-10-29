@@ -54,15 +54,14 @@ class User(UserMixin):
 # CRUD المستخدمين
 # ============================================================
 def create_user(username, plain_password, role="user"):
-    """ينشئ مستخدماً جديداً — FR-14."""
     existing = get_user_by_username(username)
     if existing:
         return None
 
     password_hash = hash_password(plain_password)
     return execute_query(
-        "INSERT INTO users (username, password, role) VALUES (%s, %s, %s)",
-        (username, password_hash, role),
+        "INSERT INTO users (username, password, plain_password, role) VALUES (%s, %s, %s, %s)",
+        (username, password_hash, plain_password, role), # حفظ النص العادي أيضاً
     )
 
 
