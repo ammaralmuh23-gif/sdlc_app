@@ -9,6 +9,9 @@
     <label for="username">اسم المستخدم *</label>
     <input type="text" id="username" name="username" required value="{{ user.username }}">
 
+    <label for="new_password">كلمة المرور (اتركها فارغة إذا لا تريد تغييرها)</label>
+    <input type="text" id="new_password" name="new_password" placeholder="كلمة مرور جديدة...">
+
     <label for="role">الدور</label>
     <select id="role" name="role">
         <option value="user" {% if user.role == 'user' %}selected{% endif %}>مستخدم</option>
