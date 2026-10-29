@@ -5,8 +5,8 @@ from models.db import execute_query, execute_one
 
 def get_all_projects(user_id=None, is_admin=False):
     if is_admin:
-        return execute_query("SELECT * FROM projects ORDER BY created_at DESC", fetch=True)
-    return execute_query("SELECT * FROM projects WHERE user_id = %s ORDER BY created_at DESC", (user_id,), fetch=True)
+        return execute_query("SELECT * FROM projects ORDER BY id ASC", fetch=True)
+    return execute_query("SELECT * FROM projects WHERE user_id = %s ORDER BY id ASC", (user_id,), fetch=True)
 
 def get_project(project_id, user_id=None, is_admin=False):
     if is_admin:
