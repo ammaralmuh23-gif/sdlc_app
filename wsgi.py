@@ -1,29 +1,35 @@
 import os
 import sys
-import sqlite3
 
 path = os.path.dirname(os.path.abspath(__file__))
 if path not in sys.path:
     sys.path.append(path)
 
-from app import create_app
+from app import app, get_db
 
-application = create_app()
+application = app
 
-# إنشاء الجداول إذا لم تكن موجودة
-db_path = os.path.join(path, 'sdlc_manager.db')
-sql_path = os.path.join(path, 'database.sql')
-
-if not os.path.exists(db_path):
-    conn = sqlite3.connect(db_path)
-    conn.executescript(open(sql_path, 'r', encoding='utf-8').read())
-    conn.commit()
-    conn.close()
-    print("✅ Tables created")
-# إضافة عمود كلمة المرور العادية وتحديث جدول المستخدمين
+# محاولة إنشاء الجداول تلقائياً عند التشغيل
 try:
-    from models.db import execute_query
-    execute_query("ALTER TABLE users ADD COLUMN plain_password TEXT")
-    print("✅ Added plain_password column")
-except Exception:
-    pass
+    # الاتصال بقاعدة البيانات باستخدام الدالة get_db
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # قراءة ملف database.sql
+    sql_file = os.path.join(path, 'database.sql')
+    if os.path.exists(sql_file):
+        with open(sql_file, 'r', encoding='utf-8') as f:
+            sql_commands = f.read().split(';')
+            
+        for command in sql_commands:
+            if command.strip():
+                try:
+                    cursor.execute(command)
+                except Exception:
+                    pass # تجاهل الأخطاء إذا كانت الجداول موجودة مسبقاً
+        
+        conn.commit()
+        print("✅ تم التحقق من الجداول بنجاح")
+    conn.close()
+except Exception as e:
+    print(f"⚠️ خطأ في إنشاء الجداول: {e}")
