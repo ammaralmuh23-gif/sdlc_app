@@ -1,35 +1,34 @@
+"""
+wsgi.py — نقطة تشغيل SDLC Manager على Render
+"""
 import os
 import sys
 
+# إضافة مسار المشروع إلى النظام
 path = os.path.dirname(os.path.abspath(__file__))
 if path not in sys.path:
     sys.path.append(path)
 
-from app import app, get_db
+# استيراد التطبيق من app.py
+from app import create_app
 
-application = app
+# إنشاء نسخة التطبيق
+application = create_app()
 
-# محاولة إنشاء الجداول تلقائياً عند التشغيل
+# إنشاء الجداول تلقائياً إذا لم تكن موجودة (لـ SQLite)
 try:
-    # الاتصال بقاعدة البيانات باستخدام الدالة get_db
-    conn = get_db()
-    cursor = conn.cursor()
+    import sqlite3
+    db_path = os.path.join(path, 'sdlc_manager.db')
+    sql_path = os.path.join(path, 'database.sql')
     
-    # قراءة ملف database.sql
-    sql_file = os.path.join(path, 'database.sql')
-    if os.path.exists(sql_file):
-        with open(sql_file, 'r', encoding='utf-8') as f:
-            sql_commands = f.read().split(';')
-            
-        for command in sql_commands:
-            if command.strip():
-                try:
-                    cursor.execute(command)
-                except Exception:
-                    pass # تجاهل الأخطاء إذا كانت الجداول موجودة مسبقاً
-        
+    if not os.path.exists(db_path) and os.path.exists(sql_path):
+        conn = sqlite3.connect(db_path)
+        with open(sql_path, 'r', encoding='utf-8') as f:
+            conn.executescript(f.read())
         conn.commit()
-        print("✅ تم التحقق من الجداول بنجاح")
-    conn.close()
+        conn.close()
+        print("✅ Tables created successfully")
+    else:
+        print("✅ Database already exists or SQL file not found")
 except Exception as e:
-    print(f"⚠️ خطأ في إنشاء الجداول: {e}")
+    print(f"⚠️ Error creating tables: {e}")
